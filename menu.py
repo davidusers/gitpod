@@ -33,7 +33,7 @@ def main():
         print("============================")
         print()
         choice = input("Entrez votre choix (1-5): ")
-
+#première option: ajouter une action------------------------------------------------------------------------
         if choice == '1':
             while True:
                 symbol = input("Entrez le symbole de l'action à ajouter (ou 'q' pour quitter): ").upper()
@@ -43,13 +43,12 @@ def main():
                 if symbol in df['symbole'].values:
                     print(f"L'action {symbol} a été ajoutée à votre portfolio.")
                     # Logique pour ajouter l'action au portfolio
-                    import ajout_action
-                    ajout_action.somme_deux_nombres()
                     
                     break
                 else:
                     print(f"Le symbole {symbol} n'existe pas. Veuillez réessayer.")
             print("1")
+            #deuxième option: supprimer une action-----------------------------------------------------------------------
         elif choice == '2':
             while True:
                 symbol = input("Entrez le symbole de l'action à supprimer (ou 'q' pour quitter): ").upper()
@@ -58,6 +57,8 @@ def main():
                 # Logique pour vérifier si l'action est dans le portfolio
                 # Supposons que nous avons une liste fictive pour l'exemple
                 portfolio = ['AAPL', 'MSFT', 'GOOGL']
+                #troisième option: afficher le portfolio-------------------------------------------------------------------
+
         elif choice == '3':
             while True:
                 symbol = input("Entrez le symbole de l'action à afficher (ou 'q' pour quitter): ").upper()
@@ -72,6 +73,7 @@ def main():
                     
                 else:
                     print(f"L'action {symbol} n'est pas dans votre portfolio. Veuillez réessayer.")
+                    #quatrième option: afficher les performances--------------------------------------------------------------------
         elif choice == '4':
             while True:
                 symbol = input("Entrez le symbole de l'action pour afficher les performances (ou 'q' pour quitter): ").upper()
@@ -83,9 +85,22 @@ def main():
                 if symbol in portfolio:
                     print(f"Performances de l'action {symbol}:")
                     # Afficher les performances de l'action
+                    def afficher_performance_action(symbol):
+                        df = pd.read_csv("/home/dav/Bureau/la_cite/semestre1/programation python/projet/symboles_prix.csv")
+                        if symbol in df['symbole'].values:
+                            action_details = df[df['symbole'] == symbol].iloc[0]
+                            print(f"Performances de l'action {symbol}:")
+                            print(f"Nom: {action_details['nom']}")
+                            print(f"Prix: {action_details['prix']}")
+                    afficher_performance_action(symbol)
+
+
+
+
                     break
                 else:
                     print(f"L'action {symbol} n'est pas dans votre portfolio. Veuillez réessayer.")
+                    #cinquième option: quitter--------------------------------------------------------------------------------------
         elif choice == '5':
             while True:
                 confirm = input("Êtes-vous sûr de vouloir quitter? (o/n): ").lower()
