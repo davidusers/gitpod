@@ -78,7 +78,6 @@ def ajout_action():
             }
             
             # Ici, vous pouvez ajouter la logique pour stocker 'action_ajoutee' dans votre portfolio
-            #action_ajoutee_df = pd.DataFrame([action_ajoutee])  # Mettre dans une liste pour créer un DataFrame d'une ligne
             donnees["action"].append(action_ajoutee)#permet d'ajouter l'action dans le dictionnaire
 
             
@@ -105,7 +104,38 @@ def ajout_action():
             print(f"Le symbole {symbol} n'existe pas. Veuillez réessayer.")
             #sauvegarder les donnees
 #-----------------------------------------------------------------------------------------------------------#
-#fonction pour sauvegarder les donnees
+# fonction pour supprimer une action ajouter
+def suprimmer_action():
+    symbol = input("Entrez le symbole de l'action à supprimer (ou 'q' pour quitter): ").upper()
+    if symbol == 'Q':
+        return
+    
+    # Charger les données existantes
+    try:
+        with open(FICHIER_DONNEES, 'r', encoding='utf-8') as f:
+            donnees_existantes = json.load(f)
+    except FileNotFoundError:
+        print("❌ Aucun portfolio trouvé.")
+        return
+    
+    # Trouver et supprimer l'action
+    action_trouvee = False
+    for action in donnees_existantes["action"]:
+        if action['symbole'] == symbol:
+            donnees_existantes["action"].remove(action)
+            action_trouvee = True
+            break
+    
+    if action_trouvee:
+        # Sauvegarder les données mises à jour
+        with open(FICHIER_DONNEES, 'w', encoding='utf-8') as f:
+            json.dump(donnees_existantes, f, ensure_ascii=False, indent=4)
+        print(f"✅ L'action {symbol} a été supprimée de votre portfolio.")
+    else:
+        print(f"❌ L'action {symbol} n'a pas été trouvée dans votre portfolio.")
+
+        
+      
 
 def sauvegarder_donnees():
     """Sauvegarde les données dans le fichier CSV"""
@@ -127,15 +157,25 @@ def sauvegarder_donnees_csv():
 
 #-----------------------------------------------------------------------------------------------------------#
 
-#creer une fonction qui vas afficher le portefolio
-def afficher_portfolio(symbol):
-    # Logique pour afficher le portfolio
-    if not symbol:
-        print("Votre portfolio est vide.")
-        return
+#creer une fonction qui vas afficher le portefolio sans passer par le imput du symbole
+# def afficher_portfolio(symbol):
+#     df_portfolio = pd.read_csv(FICHIER_DONNEES)
+
+#     for i in df_portfolio:
+#         if i == symbol:
+#             print(i)
+#             break
+
         
-    df_portfolio = pd.read_csv(FICHIER_DONNEES)
-    print("LE data est : ",df_portfolio)
+def afficher_portfolio():
+
+    df_portfolio = pd.DataFrame(donnees["action"])
+    print(df_portfolio)
+    # df_portfolio = pd.read_csv(FICHIER_DONNEES)
+
+    # for i in df_portfolio:
+    #     print(i)
+    #     break
 #-----------------------------------------------------------------------------------------------------------#
 
 
@@ -160,26 +200,7 @@ def afficher_performance_action():
 #fonction pour supprimer une action
 
 
-def suprimmer_action():
-    afficher_portfolio(symbol=None)
-    """Supprime un client"""
-    df_portfolio = pd.read_csv(FICHIER_DONNEES)
-    print("\n--- Supprimer un client ---")
-    
-    try:
-        #/n permet de sauter une ligne pour une meilleure lisibilité
-        symbole = input("Symbole de l'action à supprimer: ").strip().upper()
-        if symbole in  df_portfolio ['symbole'].values:
-            df_portfolio = df_portfolio[df_portfolio['symbole'] != symbole]
-            df_portfolio.to_csv(FICHIER_DONNEES, index=False)
-            print(f"✅ L'action {symbole} a été supprimée avec succès!")
-        if not symbole:
-            print("❌ action non trouvé!")
-            return
-    except Exception as e:
-        print(f"❌ Erreur: {e}")
-        
-        # Logique de suppression ici
+
 #------------------------------------------------------------------------------------------------------------
 #creer une foction qui permet de quitter l'application
 def quitter_application():
@@ -223,10 +244,8 @@ def menu_principal():
             suprimmer_action()
         elif choice == '3':
             #ici on vas appeler la fonction pour afficher le portefolio
-            symbol = input("Entrez le symbole de l'action à afficher (ou 'q' pour quitter): ").upper()
-            if symbol == 'Q':
-                continue
-            afficher_portfolio(symbol)
+
+            afficher_portfolio()
         elif choice == '4':
             #ici on vas appeler la fonction pour afficher les performances
             print("**********************************************************************************************************")
