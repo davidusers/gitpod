@@ -53,8 +53,14 @@ def ajout_action():
         if symbol == 'Q':
             break
             
-        nombre_action = input("Entrez le nombre d'actions à ajouter: ")
-        prix_achat = input("Entrez le prix d'achat par action: ")
+        nombre_action = int(input("Entrez le nombre d'actions à ajouter: "))
+        if nombre_action <= 0:
+            print("Le nombre d'actions doit être un entier positif. Veuillez réessayer.")
+            continue
+        prix_achat =int(input("Entrez le prix d'achat par action: "))
+        if prix_achat <= 0:
+            print("Le prix d'achat doit être un entier positif. Veuillez réessayer.")
+            continue
         
         df = pd.read_csv("/home/dav/Bureau/la_cite/semestre1/programation python/projet/symboles_prix.csv")
         
@@ -65,9 +71,9 @@ def ajout_action():
             df_action = df[df['symbole'] == symbol].iloc[0]  # pour obtenir les details de l'action
             
             action_ajoutee = {
-                'symbole': df_action['symbole'],  # Retirer les crochets [] - c'est un string, pas une liste
+                'symbole': df_action['symbole'],  
                 #'nom': df_action['nom'],
-                'prix_achat': prix_achat*2,
+                'prix_achat': prix_achat*2, 
                 'nombre_action': nombre_action
             }
             
@@ -86,7 +92,10 @@ def ajout_action():
                 portfolio_complet = json.load(f)
             #portfolio_complet = pd.read_csv(FICHIER_DONNEES)
                 print("\nPortfolio mis à jour:")
-                print(portfolio_complet)
+                #print(portfolio_complet)
+            #convertir le dictionnaire en dataframe pandas
+                df_portfolio = pd.DataFrame(donnees["action"])
+                print(df_portfolio)
             
 
 
