@@ -1,12 +1,16 @@
 import pandas as pd 
+import json 
+donnees={
+    'action':[]
+}
 # Fichier pour sauvegarder les données
-FICHIER_DONNEES = "donnees_gestion.csv"
+FICHIER_DONNEES = "donnees_gestion.json"
 # commeencons par charger les donnees ------------------------------------------------
 # cette fonction permet de charger les donnees a partir du fichier csv
 
 def loard_data():
     df=pd.read_csv("/home/dav/Bureau/la_cite/semestre1/programation python/projet/symboles_prix.csv")
-    print(df.info())
+    print(df.head())
 
     # import csv
     # with open('/home/dav/Bureau/la_cite/semestre1/programation python/projet/symboles_prix.csv', mode ='r')as file:
@@ -14,10 +18,10 @@ def loard_data():
     #   for lines in csvFile:
     #         #afficher  10 lignes
     #         print(lines)
-    prix=df["prix"].head(10)
-    nom=df["nom"].head(10)
-    symbole=df["symbole"].describe()
-    #menu.main()
+    #prix=df["prix"].head(10)
+    #nom=df["nom"].head(10)
+    #symbole=df["symbole"].describe()
+    #print("les prix sont : ",prix)
 
 
 
@@ -28,16 +32,16 @@ def loard_data():
 
 def affiche_menu_principal():
     while True:
-        print("=== Gestion de portfolio ===")
+        print("=== 🏢 Gestion de portfolio ===")
         print("1. Ajouter une action")
         print("2. Supprimer une action")
         print("3. Afficher le portfolio")
-        print("4. Afficher les performances")
-        print("5. Quitter")
+        print("4. 📊Afficher les performances")
+        print("5. 🚪Quitter")
         print()
         print("============================")
         print()
-        choice = input("Entrez votre choix (1-5): ")
+        break
         
 #-------------------------------------------------------------------------------------------#
 #première option: ajouter une action------------------------------------------------------------------------
@@ -49,7 +53,7 @@ def ajout_action():
         if symbol == 'Q':
             break
             
-        nombre = input("Entrez le nombre d'actions à ajouter: ")
+        nombre_action = input("Entrez le nombre d'actions à ajouter: ")
         prix_achat = input("Entrez le prix d'achat par action: ")
         
         df = pd.read_csv("/home/dav/Bureau/la_cite/semestre1/programation python/projet/symboles_prix.csv")
@@ -63,22 +67,26 @@ def ajout_action():
             action_ajoutee = {
                 'symbole': df_action['symbole'],  # Retirer les crochets [] - c'est un string, pas une liste
                 #'nom': df_action['nom'],
-                'prix_achat': prix_achat*21000,
-                'nombre': nombre
+                'prix_achat': prix_achat*2,
+                'nombre_action': nombre_action
             }
             
-        
-            
             # Ici, vous pouvez ajouter la logique pour stocker 'action_ajoutee' dans votre portfolio
-            action_ajoutee_df = pd.DataFrame([action_ajoutee])  # Mettre dans une liste pour créer un DataFrame d'une ligne
+            #action_ajoutee_df = pd.DataFrame([action_ajoutee])  # Mettre dans une liste pour créer un DataFrame d'une ligne
+            donnees["action"].append(action_ajoutee)#permet d'ajouter l'action dans le dictionnaire
+
             
             # Sauvegarder dans le fichier
-            action_ajoutee_df.to_csv(FICHIER_DONNEES, mode='a', header=False, index=False)
+            with open(FICHIER_DONNEES, 'w', encoding='utf-8') as f:
+                json.dump(donnees, f, ensure_ascii=False, indent=4)
+            #action_ajoutee_df.to_csv(FICHIER_DONNEES, mode='a', header=False, index=False)
             
             # Lire et afficher le fichier mis à jour
-            portfolio_complet = pd.read_csv(FICHIER_DONNEES)
-            print("\nPortfolio mis à jour:")
-            print(portfolio_complet)
+            with open(FICHIER_DONNEES, 'r', encoding='utf-8') as f:
+                portfolio_complet = json.load(f)
+            #portfolio_complet = pd.read_csv(FICHIER_DONNEES)
+                print("\nPortfolio mis à jour:")
+                print(portfolio_complet)
             
 
 
@@ -99,6 +107,15 @@ def sauvegarder_donnees():
     except Exception as e:
         print(f"❌ Erreur lors de la sauvegarde: {e}")
 
+def sauvegarder_donnees_csv():
+            """Sauvegarde les données dans un fichier CSV"""
+            try:
+                with open('donnees_gestion.csv', 'w', encoding='utf-8') as f:
+                    f.write("Données sauvegardées...\n")
+                print("✅ Données sauvegardées dans donnees_gestion.csv avec succès!")
+            except Exception as e:
+                print(f"❌ Erreur lors de la sauvegarde CSV: {e}")
+
 #-----------------------------------------------------------------------------------------------------------#
 
 #creer une fonction qui vas afficher le portefolio
@@ -111,6 +128,26 @@ def afficher_portfolio(symbol):
     df_portfolio = pd.read_csv(FICHIER_DONNEES)
     print("LE data est : ",df_portfolio)
 #-----------------------------------------------------------------------------------------------------------#
+
+
+
+
+#fonction pour afficher les performances sans symbol
+def afficher_performance_action():
+    df_portfolio = pd.read_csv(FICHIER_DONNEES)
+
+    for i in df_portfolio:
+        print(i)
+        break
+
+
+
+
+
+
+
+
+
 #fonction pour supprimer une action
 
 
@@ -134,12 +171,21 @@ def suprimmer_action():
         print(f"❌ Erreur: {e}")
         
         # Logique de suppression ici
-
+#------------------------------------------------------------------------------------------------------------
+#creer une foction qui permet de quitter l'application
+def quitter_application():
+    """Quitte l'application"""
+    print("👋 Au revoir!")
+    exit()
 
 
 
 #-----------------------------------------------------------------------------------------------------------#       
-#fonction principale du menu
+#  fonction principale du menu principal
+
+
+
+
 
 
 
@@ -152,9 +198,11 @@ def suprimmer_action():
 
 def menu_principal():
     """Fonction principale du menu"""
+    #affiche_menu_principal()
     loard_data()
     
     while True:
+        affiche_menu_principal()
         choice = input("Entrez votre choix (1-5): ")
         #ici on vas gerer les differentes options du menu principal
         if choice == '1':
@@ -172,16 +220,11 @@ def menu_principal():
             afficher_portfolio(symbol)
         elif choice == '4':
             #ici on vas appeler la fonction pour afficher les performances
-            print("Fonction d'affichage des performances à implémenter.")
+            print("**********************************************************************************************************")
+            afficher_performance_action()
+            #print("Fonction d'affichage des performances à implémenter.")
         elif choice == '5':
-            #quitter l'application
-
-            sauvegarder_avant_quitter = input("Voulez-vous sauvegarder avant de quitter? (o/n): ")
-            if sauvegarder_avant_quitter.lower() == 'o':
-                print("💾 Sauvegarde des modifications...")
-                # Logique de sauvegarde ici
-                sauvegarder_donnees()
-
+            quitter_application()
             print("🔙 Retour au menu principal.")
             print("👋 Au revoir!")
             break

@@ -5,7 +5,7 @@ from datetime import datetime
 # Fichier pour sauvegarder les données
 FICHIER_DONNEES = "donnees_gestion.json"
 
-# Structure des données
+# Structure des données permet de stocker clients, produits et commandes qui seront sauvegardés dans un fichier JSON et chargés au démarrage de l'application  .
 donnees = {
     "clients": [],
     "produits": [],
@@ -14,11 +14,11 @@ donnees = {
 
 def charger_donnees():
     """Charge les données depuis le fichier JSON"""
-    global donnees
+    global donnees #préciser que l'on utilise la variable globale donnees
     try:
-        if os.path.exists(FICHIER_DONNEES):
-            with open(FICHIER_DONNEES, 'r', encoding='utf-8') as f:
-                donnees = json.load(f)
+        if os.path.exists(FICHIER_DONNEES):# vérifier si le fichier  existe
+            with open(FICHIER_DONNEES, 'r', encoding='utf-8') as f:# ouvrir le fichier en mode lecture
+                donnees = json.load(f)# charger les données JSON dans la variable donnees
             print("✅ Données chargées avec succès!")
         else:
             print("ℹ️  Aucun fichier de données trouvé. Démarrage avec des données vides.")
@@ -33,6 +33,15 @@ def sauvegarder_donnees():
         print("✅ Données sauvegardées avec succès!")
     except Exception as e:
         print(f"❌ Erreur lors de la sauvegarde: {e}")
+        #fonction qui sauvegarde les donnees dans un fichier csv
+# def sauvegarder_donnees_csv():
+#             """Sauvegarde les données dans un fichier CSV"""
+#             try:
+#                 with open('donnees_gestion.csv', 'w', encoding='utf-8') as f:
+#                     f.write("Données sauvegardées...\n")
+#                 print("✅ Données sauvegardées dans donnees_gestion.csv avec succès!")
+#             except Exception as e:
+#                 print(f"❌ Erreur lors de la sauvegarde CSV: {e}")
 
 def afficher_menu_principal():
     """Affiche le menu principal"""
