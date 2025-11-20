@@ -1,7 +1,8 @@
 import pandas as pd 
 import json 
 donnees={
-    'action':[]
+    'action':[],
+    'performance':[]
 }
 # Fichier pour sauvegarder les données
 FICHIER_DONNEES = "donnees_gestion.json"
@@ -73,8 +74,8 @@ def ajout_action():
             action_ajoutee = {
                 'symbole': df_action['symbole'],  
                 #'nom': df_action['nom'],
-                'prix_achat': prix_achat*2, 
-                'nombre_action': nombre_action
+                'nombre_action': nombre_action,
+                'prix_achat': prix_achat
             }
             
             # Ici, vous pouvez ajouter la logique pour stocker 'action_ajoutee' dans votre portfolio
@@ -166,7 +167,7 @@ def sauvegarder_donnees_csv():
 #             print(i)
 #             break
 
-        
+# nous allons creer une fonction qui affiche tout le portfolio    
 def afficher_portfolio():
 
     df_portfolio = pd.DataFrame(donnees["action"])
@@ -181,15 +182,32 @@ def afficher_portfolio():
 
 
 
-#fonction pour afficher les performances sans symbol
+#fonction pour afficher les performances  qui affichera le symbole, le nombre d'action, le prix d'achat, le prix actuel
 def afficher_performance_action():
-    df_portfolio = pd.read_csv(FICHIER_DONNEES)
-
-    for i in df_portfolio:
-        print(i)
-        break
-
-
+    df_portfolio = pd.DataFrame(donnees["action"])
+    df_prix_actuel = pd.read_csv("/home/dav/Bureau/la_cite/semestre1/programation python/projet/symboles_prix.csv")
+    
+    performances = []
+    
+    for index, row in df_portfolio.iterrows():
+        symbole = row['symbole']
+        nombre_action = row['nombre_action']
+        prix_achat = row['prix_achat']
+        
+        prix_actuel_row = df_prix_actuel[df_prix_actuel['symbole'] == symbole]
+        if not prix_actuel_row.empty:
+            prix_actuel = prix_actuel_row.iloc[0]['prix']
+            performance = (prix_actuel - prix_achat) * nombre_action
+            performances.append({
+                'symbole': symbole,
+                'nombre_action': nombre_action,
+                'prix_achat': prix_achat,
+                'prix_actuel': prix_actuel,
+                'Gain/perte': performance
+            })
+    
+    df_performances = pd.DataFrame(performances)
+    print(df_performances)
 
 
 
