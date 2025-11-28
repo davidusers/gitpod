@@ -224,45 +224,71 @@ def ajout_action():
         break
 #-----------------------------------------------------------------------------------------------------------#
 # fonction pour supprimer une action ajouter
-def suprimmer_action():
-    symbol = input("Entrez le symbole de l'action à supprimer (ou 'q' pour quitter): ").upper()
-    if symbol == 'Q':
+def supprimer_action():
+    """Fonction pour supprimer une action du portfolio"""
+    
+    # Vérifier d'abord si le portfolio n'est pas vide
+    if not donnees["action"]:
+        print("Votre portfolio est vide. Aucune action à supprimer.")
         return
     
-    # Charger les données existantes
-    try:
-        with open(FICHIER_DONNEES, 'r', encoding='utf-8') as f:
-            donnees_existantes = json.load(f)
-    except FileNotFoundError:
-        print("❌ Aucun portfolio trouvé.")
-        return
+    # Afficher le portfolio actuel
+    print("\n📊 LE PORTFOLIO ACTUEL:")
+    df_portfolio = pd.DataFrame(donnees["action"])
+    print(df_portfolio)
     
-    # Trouver et supprimer l'action
-    action_trouvee = False
-    for action in donnees_existantes["action"]:
-        if action['symbole'] == symbol:
-            donnees_existantes["action"].remove(action)
-            action_trouvee = True
-            break
-    
-    if action_trouvee:
-        # Sauvegarder les données mises à jour
-        with open(FICHIER_DONNEES, 'w', encoding='utf-8') as f:
-            json.dump(donnees_existantes, f, ensure_ascii=False, indent=4)
-        print(f"✅ L'action {symbol} a été supprimée de votre portfolio.")
-    else:
-        print(f"❌ L'action {symbol} n'a pas été trouvée dans votre portfolio.")
-# creons une fonction pour lire les donnees du fichier json
-# def lire_donnees():
-#     try:
-#         with open(FICHIER_DONNEES, 'r', encoding='utf-8') as f:
-#             donnees_lues = json.load(f)
-#             return donnees_lues
-#     except FileNotFoundError:
-#         print("❌ Aucun portfolio trouvé.")
-#         return {'action': [], 'performance': []}
-
-#fonction pour sauvegarder les donnees dans le fichier json
+    while True:
+        symbol = input("\nEntrez le symbole de l'action à supprimer (ou 'q' pour annuler): ").upper()
+        
+        if symbol == 'Q':
+            print("Suppression annulée.")
+            return
+        
+        # Vérifier si le symbole existe dans le portfolio
+        action_trouvee = None
+        for action in donnees["action"]:
+            if action['symbole'] == symbol:
+                action_trouvee = action
+                break
+        
+        if not action_trouvee:
+            print(f"❌ Le symbole {symbol} n'existe pas dans votre portfolio. Veuillez réessayer.")
+            continue
+        
+        # Afficher les détails de l'action trouvée
+        print(f"\nAction trouvée:")
+        print(f"Symbole: {action_trouvee['symbole']}")
+        print(f"Nombre d'actions: {action_trouvee['nombre_action']}")
+        print(f"Prix d'achat moyen: {action_trouvee['prix_achat']:.2f}$")
+        
+        # Demande confirmation de suppression de l'action
+        confirmation = input(f"\nÊtes-vous sûr de vouloir supprimer {symbol} de votre portfolio? (o/n): ").lower()
+        
+        if confirmation in ['o', 'oui', 'y', 'yes']:
+            # Supprimer l'action
+            donnees["action"] = [action for action in donnees["action"] if action['symbole'] != symbol]#cette ligne se lit 
+            
+            # Sauvegarder les modifications
+            try:
+                with open(FICHIER_DONNEES, 'w', encoding='utf-8') as f:
+                    json.dump(donnees, f, ensure_ascii=False, indent=4)
+                print(f"✅ Action {symbol} supprimée avec succès!")
+                
+                # Afficher le portfolio mis à jour
+                if donnees["action"]:
+                    print("\n📊 PORTFOLIO MIS À JOUR:")
+                    df_nouveau = pd.DataFrame(donnees["action"])
+                    print(df_nouveau)
+                else:
+                    print("\n📊 Votre portfolio est maintenant vide.")
+                    
+            except Exception as e:
+                print(f"❌ Erreur lors de la sauvegarde: {e}")
+        
+        else:
+            print("Suppression annulée.")
+        
+        break
 
 def sauvegarder_donnees():
     """Sauvegarde les données dans le fichier JSON"""
@@ -277,17 +303,79 @@ def sauvegarder_donnees():
 
 #troisieme option: afficher le portfolio-----------------------------------------------------------------------
 
-# nous allons creer une fonction qui affiche tout le portfolio    
+# nous allons creer une fonction qui affiche tout le portfolio  
+
 def afficher_portfolio():
+    """Fonction pour afficher le portfolio de manière lisible et détaillée"""
+    
+    try:
+        # Charger les données depuis le fichier
+        with open(FICHIER_DONNEES, 'r', encoding='utf-8') as f:
+            donnees_chargees = json.load(f)
+        
+        actions = donnees_chargees["action"]#ctte ligne se lit comme suit on accede a la cle action du dictionnaire donnees_chargees et on stocke la liste des actions dans la variable actions
+        
+        if not actions:
+            print("\n📭 VOTRE PORTFOLIO EST VIDE")
+            print("Ajoutez des actions pour commencer à construire votre portfolio.")
+            return
+        
+        print("\n" + "="*60)
+        print("📊 VOTRE PORTFOLIO D'ACTIONS")
+        print("="*60)
+        
+        # Afficher sous forme de tableau avec pandas
+        df_portfolio = pd.DataFrame(actions)
+        
+        # Formater les colonnes pour une meilleure présentation
+        df_portfolio_affichage = df_portfolio.copy()
+        df_portfolio_affichage['prix_achat'] = df_portfolio_affichage['prix_achat'].apply(lambda x: f"{x:.2f} $")
+        
+        print(df_portfolio_affichage.to_string(index=False))
+        
+        # Calculer et afficher les statistiques
+        print("\n" + "-"*60)
+        print("📈 STATISTIQUES DU PORTFOLIO")
+        print("-"*60)
+        
+        total_actions = df_portfolio['nombre_action'].sum()
+        investissement_total = (df_portfolio['nombre_action'] * df_portfolio['prix_achat']).sum()
+        nombre_symboles = len(actions)
+        
+        print(f"Nombre total d'actions différentes: {nombre_symboles}")
+        print(f"Nombre total d'actions détenues: {total_actions}")
+        print(f"Investissement total: {investissement_total:.2f} $")
+        print("="*60)
+        print()
+        
+    except FileNotFoundError:
+        print("\n❌ Aucun portfolio trouvé.")
+        print("Commencez par ajouter des actions à votre portfolio.")
+    except Exception as e:
+        print(f"\n❌ Erreur lors du chargement du portfolio: {e}")
 
-    df_portfolio = pd.DataFrame(donnees["action"])
-    print(df_portfolio)
-    # df_portfolio = pd.read_csv(FICHIER_DONNEES)
 
-    # for i in df_portfolio:
-    #     print(i)
-    #     break
-#-----------------------------------------------------------------------------------------------------------#
+
+
+
+
+
+
+
+
+
+
+
+# def afficher_portfolio():
+
+#     df_portfolio = pd.DataFrame(donnees["action"])
+#     print(df_portfolio)
+#     # df_portfolio = pd.read_csv(FICHIER_DONNEES)
+
+#     # for i in df_portfolio:
+#     #     print(i)
+#     #     break
+# #-----------------------------------------------------------------------------------------------------------#
 
 
 
@@ -308,7 +396,7 @@ def afficher_performance_action():
         
         prix_actuel_row = df_prix_actuel[df_prix_actuel['symbole'] == symbole]#permet de filtrer le dataframe des prix actuels pour obtenir la ligne correspondant au symbole
         if not prix_actuel_row.empty:#verifier si la ligne existe
-            prix_actuel = prix_actuel_row.iloc[0]['prix']#obtenir le prix actuel
+            prix_actuel = prix_actuel_row.iloc[0]['prix']#obtenir le prix actuel et se lit comme suit on utilise iloc[0] pour acceder a la premiere ligne du dataframe filtré et on accede a la colonne 'prix' pour obtenir le prix actuel de l'action
             performance = (prix_actuel - prix_achat) * nombre_action
 
 
@@ -359,7 +447,7 @@ def menu_principal():
         elif choice == '2':
             #ici on vas appeler la fonction pour supprimer une action
 
-            suprimmer_action()
+            supprimer_action()
         elif choice == '3':
             #ici on vas appeler la fonction pour afficher le portefolio
 
