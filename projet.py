@@ -1,5 +1,6 @@
 import pandas as pd 
 import json 
+#dictionnaire pour stocker les donnees du portfolio
 donnees={
     'action':[],
     'performance':[]
@@ -43,93 +44,7 @@ def affiche_menu_principal():
         print("============================")
         print()
         break
-   
-        
-#-------------------------------------------------------------------------------------------#
-#première option: ajouter une action------------------------------------------------------------------------
-
-# def ajout_action():
-#     # Ici on va prendre le choix du menu principal
-#     while True:
-#         symbol = input("Entrez le symbole de l'action à ajouter (ou 'q' pour quitter): ").upper()
-#         if symbol == 'Q':
-#             break
-            
-#         nombre_action = int(input("Entrez le nombre d'actions à ajouter: "))
-#         if nombre_action <= 0:
-#             print("Le nombre d'actions doit être un entier positif. Veuillez réessayer.")
-#             continue
-#         # verifier si le nombre d'action existe deja pour un element faire la somme de l'ancien et du nouveau  pour chaque ajout
-#         if nombre_action in [action['nombre_action'] for action in donnees["action"] if action['symbole'] == symbol]:#verifier si le nombre d'action existe 
-#             #faire la somme de l'ancien et du nouveau
-#             for action in donnees["action"]:
-#                 if action['symbole'] == symbol:
-#                     action['nombre_action'] += nombre_action
-#             #print(f"Le nombre d'actions pour {symbol} a été mis à jour.")
-
-#             continue  # Passer à la prochaine itération de la boucle principale
-#         prix_achat =int(input("Entrez le prix d'achat par action: "))
-#         # Si le symbole existe déjà dans le portfolio de l’usager,prix moyen doitêtre mis à jour avec le calcul suivant :𝑝𝑟𝑖𝑥 = ((𝑝𝑟𝑖𝑥𝑎𝑣𝑎𝑛𝑡 ∗ 𝑛𝑏𝐴𝑐𝑡𝑖𝑜𝑛𝑠𝑎𝑣𝑎𝑛𝑡 ) + (𝑝𝑟𝑖𝑥𝑎𝑗𝑜𝑢𝑡é ∗ 𝑛𝑏𝐴𝑐𝑡𝑖𝑜𝑛𝑠𝑎𝑗𝑜𝑢𝑡é ) )/(𝑛𝑏𝐴𝑐𝑡𝑖𝑜𝑛𝑠𝑎𝑣𝑎𝑛𝑡 + 𝑛𝑏𝐴𝑐𝑡𝑖𝑜𝑛𝑠𝑎𝑗𝑜𝑢𝑡é)
-#         if prix_achat in [action['prix_achat'] for action in donnees["action"] if action['symbole'] == symbol]:#verifier si le prix d'achat existe deja pour un element faire le calcul du prix 𝑝𝑟𝑖𝑥 = ((𝑝𝑟𝑖𝑥𝑎𝑣𝑎𝑛𝑡 ∗ 𝑛𝑏𝐴𝑐𝑡𝑖𝑜𝑛𝑠𝑎𝑣𝑎𝑛𝑡 ) + (𝑝𝑟𝑖𝑥𝑎𝑗𝑜𝑢𝑡é ∗ 𝑛𝑏𝐴𝑐𝑡𝑖𝑜𝑛𝑠𝑎𝑗𝑜𝑢𝑡é ) )/(𝑛𝑏𝐴𝑐𝑡𝑖𝑜𝑛𝑠𝑎𝑣𝑎𝑛𝑡 + 𝑛𝑏𝐴𝑐𝑡𝑖𝑜𝑛𝑠𝑎𝑗𝑜𝑢𝑡é)
-#             for action in donnees["action"]:
-#                 if  action['symbole'] == symbol:
-#                     ancien_nombre = action['nombre_action']
-#                     ancien_prix = action['prix_achat']
-#                     nouveau_nombre = ancien_nombre + nombre_action
-#                     nouveau_prix = ((ancien_prix * ancien_nombre) + (prix_achat * nombre_action)) #/ nouveau_nombre
-#                     action['prix_achat'] = nouveau_prix
-#             #print(f"Le prix d'achat pour {symbol} a été mis à jour.")
-
-
-#         # if prix_achat <= 0 or :
-#         #     print("Le prix d'achat doit être un entier positif. Veuillez réessayer.")
-#             continue
-        
-#         df = pd.read_csv("/home/dav/Bureau/la_cite/semestre1/programation python/projet/symboles_prix.csv")
-        
-#         if symbol in df['symbole'].values:
-#             print(f"L'action {symbol} a été ajoutée à votre portfolio.")
-            
-#             # Logique pour ajouter l'action au portfolio
-#             df_action = df[df['symbole'] == symbol].iloc[0]  # pour obtenir les details de l'action
-            
-#             action_ajoutee = {
-#                 'symbole': df_action['symbole'],  
-#                 #'nom': df_action['nom'],
-#                 'nombre_action':nouveau_nombre,
-#                 'prix_achat': nouveau_prix
-#             }
-            
-#             # Ici, vous pouvez ajouter la logique pour stocker 'action_ajoutee' dans votre portfolio
-#             donnees["action"].append(action_ajoutee)#permet d'ajouter l'action dans le dictionnaire
-
-#             #sauvegarder les donnees ajouter dans le fichier donnees_gestion.txt 
-
-#             with open(FICHIER_DONNEES, 'r', encoding='utf-8') as f:
-#                 donnees_existantes = json.load(f)
-
-            
-#             # Sauvegarder dans le fichier de facon definitive et pouvant etre relu n;importe quelle moment
-#             # with open(FICHIER_DONNEES, 'w', encoding='utf-8') as f:
-#             #     json.dump(donnees, f, ensure_ascii=False, indent=4)
-            
-
-#             #action_ajoutee_df.to_csv(FICHIER_DONNEES, mode='a', header=False, index=False)
-            
-#             # Lire et afficher le fichier mis à jour
-#             with open(FICHIER_DONNEES, 'r', encoding='utf-8') as f:
-#                 portfolio_complet = json.load(f)
-#             #portfolio_complet = pd.read_csv(FICHIER_DONNEES)
-#                 print("\nPortfolio mis à jour:")
-#                 #print(portfolio_complet)
-#             #convertir le dictionnaire en dataframe pandas
-#                 df_portfolio = pd.DataFrame(donnees["action"])
-#                 print(df_portfolio)
-#             break
-            
-#         else:
-#             print(f"Le symbole {symbol} n'existe pas. Veuillez réessayer.")
-#             #sauvegarder les donnees
+#-----------------------------------------------------------------------------------------------------------#
 
 
 def ajout_action():
@@ -266,7 +181,7 @@ def supprimer_action():
         
         if confirmation in ['o', 'oui', 'y', 'yes']:
             # Supprimer l'action
-            donnees["action"] = [action for action in donnees["action"] if action['symbole'] != symbol]#cette ligne se lit 
+            donnees["action"] = [action for action in donnees["action"] if action['symbole'] != symbol]#cette ligne se lit comme suit on utilise une comprehension de liste pour creer une nouvelle liste d'actions qui exclut l'action avec le symbole spécifié,ici on veux supprimer l'action dont le symbole correspond a celui entré par l'utilisateur dont on garde que les actions dont le symbole est different de celui entré par l'utilisateur
             
             # Sauvegarder les modifications
             try:
@@ -354,17 +269,8 @@ def afficher_portfolio():
     except Exception as e:
         print(f"\n❌ Erreur lors du chargement du portfolio: {e}")
 
-
-
-
-
-
-
-
-
-
-
-
+#-----------------------------------------------------------------------------------------------------------#
+# ancienne version de la fonction afficher portfolio
 
 # def afficher_portfolio():
 
